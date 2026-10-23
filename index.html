@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#171229">
+<title>StudyHub | Learn Smarter</title>
+<style>
+:root{--bg:#0d0b18;--panel:#191529;--panel2:#211a35;--line:#3b2e55;--purple:#b99aff;--button:#9b75ee;--text:#fff;--muted:#b9b3cb;--good:#7ee0a3;--bad:#ff9eaa}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}
+header{padding:18px max(16px,calc((100% - 1050px)/2));background:#171229;border-bottom:1px solid #30254b}
+.logo{font-size:27px;font-weight:bold;color:var(--purple)}header p{color:var(--muted);margin:6px 0 0}
+main{max-width:1050px;margin:auto;padding:18px 15px 35px}
+.hero{padding:24px 20px;border-radius:20px;background:linear-gradient(135deg,#432477,#20183f);margin-bottom:20px}
+.hero h1{margin:0 0 8px;font-size:28px}.hero p{color:#e2d8fa;line-height:1.6;margin-bottom:0}
+.panel,.card{background:var(--panel);border:1px solid #30254b;border-radius:15px;padding:16px;min-width:0}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+label{display:block;margin:12px 0 7px;font-weight:bold}
+input,select{width:100%;padding:13px;background:#191529;color:white;border:1px solid #44375e;border-radius:10px;font-size:16px}
+select option{background:#191529;color:white}
+h2{font-size:21px;margin:22px 0 12px}h3{color:#d5c1ff;margin-top:5px}
+p{line-height:1.6}.muted,.small{color:var(--muted);font-size:13px;line-height:1.6}
+button{cursor:pointer;font-size:15px}
+.primary,.secondary,.danger{width:100%;padding:12px;border-radius:9px;font-weight:bold;margin-top:10px}
+.primary{border:0;background:var(--button);color:#100b1b}
+.secondary{border:1px solid #554176;background:#30254b;color:white;margin:0 0 14px}
+.danger{border:1px solid #7b3847;background:#3a1e2b;color:#fff}
+.chapter,.option{display:block;width:100%;text-align:left;padding:14px;margin:9px 0;background:#191529;color:white;border:1px solid #44375e;border-radius:10px}
+.chapter:hover,.option:hover{background:#30204e}
+.option:disabled{cursor:default;opacity:.95}.option.correct{border-color:var(--good);background:#173527}.option.wrong{border-color:var(--bad);background:#3a1e2b}
+.notice{background:#211a35;border:1px solid #4a3869;border-radius:10px;padding:12px;color:#e2d8fa;font-size:14px;line-height:1.6}
+.badge{display:inline-block;padding:5px 9px;border-radius:20px;background:#30204e;color:#e4d5ff;font-size:12px;margin:3px}
+.statrow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.stat{text-align:center;background:#100d1d;padding:14px;border-radius:12px}.stat strong{display:block;font-size:23px;color:var(--purple)}
+table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;border-bottom:1px solid #3b2e55}th{color:#d5c1ff}
+footer{text-align:center;color:#aaa2bd;padding:24px 12px;font-size:13px}
+[hidden]{display:none!important}
+@media(max-width:560px){.grid,.controls{grid-template-columns:1fr}.hero h1{font-size:24px}.statrow{grid-template-columns:1fr 1fr}.stat:last-child{grid-column:1/-1}th,td{padding:8px;font-size:13px}}
+</style>
+</head>
+<body>
+<header><div class="logo">📚 StudyHub</div><p>Your learning journey starts here.</p></header>
+<main>
+<section class="hero"><h1>Learn smarter. Grow stronger.</h1><p>Choose your board and class, explore chapter resources, practise quizzes at three difficulty levels, and track your progress.</p></section>
+
+<section id="home" class="panel">
+<h2>🎓 Set up your learning space</h2>
+<div class="controls">
+ <div><label for="board">Board</label><select id="board"><option>MP Board</option><option>CBSE</option><option>ICSE</option><option>Other</option></select></div>
+ <div><label for="classSelect">Class</label><select id="classSelect"><option value="6">Class 6</option><option value="7">Class 7</option><option value="8">Class 8</option><option value="9">Class 9</option><option value="10">Class 10</option><option value="11">Class 11</option><option value="12">Class 12</option></select></div>
+ <div id="streamWrap" hidden><label for="stream">Class 11–12 stream</label><select id="stream"><option value="Science">Science</option><option value="Commerce">Commerce</option><option value="Arts">Arts / Humanities</option></select></div>
+ <div><label for="search">Search subject or chapter</label><input id="search" type="search" placeholder="e.g. Mathematics, Motion, Accountancy"></div>
+</div>
+<div class="notice" style="margin-top:14px"><b>Syllabus accuracy note:</b> This is a working website prototype. Board and class selection are available, but the included chapter lists are starter examples, not a verified complete 2026–27 syllabus. Official chapter lists must be checked board-by-board before publishing as complete.</div>
+<h2>Subjects</h2><div id="subjects" class="grid"></div>
+<h2>🏆 Quiz leaderboard</h2>
+<div class="notice">This version saves scores on this device/browser only. A shared leaderboard across different students and phones needs a backend database and student accounts.</div>
+<div id="leaderboard"></div>
+<button class="secondary" id="clearScores">Clear scores on this device</button>
+</section>
+
+<section id="chaptersView" hidden>
+<button class="secondary" id="backHome">← Back to subjects</button>
+<h2 id="chaptersTitle">Chapters</h2>
+<p class="muted" id="chaptersSubtitle"></p>
+<div id="chapters"></div>
+</section>
+
+<section id="lessonView" hidden>
+<button class="secondary" id="backChapters">← Back to chapters</button>
+<div class="card"><span class="badge" id="lessonMeta"></span><h2 id="lessonTitle"></h2><div id="lessonBody"></div></div>
+<h2>🧠 Choose quiz difficulty</h2>
+<p class="muted">Each level has its own questions and score. In this starter build, the next level unlocks at 60% or higher.</p>
+<div class="grid">
+ <div class="card"><h3>🟢 Level 1 — Easy</h3><p class="muted">Warm-up questions and core ideas.</p><button class="primary" data-level="Easy">Start Easy</button></div>
+ <div class="card"><h3>🟡 Level 2 — Medium</h3><p class="muted">Apply what you have learned.</p><button class="primary" data-level="Medium">Start Medium</button></div>
+ <div class="card"><h3>🔴 Level 3 — Hard</h3><p class="muted">More challenging questions.</p><button class="primary" data-level="Hard">Start Hard</button></div>
+</div>
+<p class="notice" id="unlockInfo"></p>
+</section>
+
+<section id="quizView" hidden>
+<button class="secondary" id="quitQuiz">← Back to lesson</button>
+<div class="card">
+ <span class="badge" id="quizMeta"></span><h2 id="quizTitle">Quiz</h2>
+ <div class="statrow"><div class="stat"><strong id="qCount">1/1</strong><span class="small">Question</span></div><div class="stat"><strong id="liveScore">0</strong><span class="small">Score</span></div><div class="stat"><strong id="timerLabel">—</strong><span class="small">Mode</span></div></div>
+ <h3 id="questionText"></h3><div id="options"></div><p id="feedback" aria-live="polite"></p>
+ <button class="primary" id="nextBtn" hidden>Next question →</button>
+ <div id="resultPanel" hidden></div>
+</div>
+</section>
+</main>
+<footer>© 2026 StudyHub | Learn Every Day 📚</footer>
+
+<script>
+const subjectsByClass = {
+ 6:["Mathematics","Science","English","Hindi","Social Science"],
+ 7:["Mathematics","Science","English","Hindi","Social Science"],
+ 8:["Mathematics","Science","English","Hindi","Social Science"],
+ 9:["Mathematics","Science","English","Hindi","Social Science"],
+ 10:["Mathematics","Science","English","Hindi","Social Science"],
+ 11:{Science:["Physics","Chemistry","Mathematics","Biology","English"],Commerce:["Accountancy","Business Studies","Economics","Mathematics","English"],Arts:["History","Geography","Political Science","Economics","English","Sociology"]},
+ 12:{Science:["Physics","Chemistry","Mathematics","Biology","English"],Commerce:["Accountancy","Business Studies","Economics","Mathematics","English"],Arts:["History","Geography","Political Science","Economics","English","Sociology"]}
+};
+const icons={Mathematics:"📐",Science:"🔬",Physics:"⚡",Chemistry:"🧪",Biology:"🧬",English:"📖",Hindi:"✍️","Social Science":"🌍",History:"🏛️",Geography:"🌎","Political Science":"⚖️",Economics:"📊",Accountancy:"🧮","Business Studies":"💼",Sociology:"👥"};
+// Starter chapter examples. Replace/extend these arrays using the current official syllabus for each board and academic year.
+const starterChapters={
+ Mathematics:["Number Systems / Number Sense","Algebra and Expressions","Geometry","Mensuration","Data Handling and Statistics"],
+ Science:["Living World and Life Processes","Matter and Materials","Force, Motion and Energy","Environment and Natural Resources"],
+ English:["Reading Comprehension","Writing Skills","Grammar","Literature"],
+ Hindi:["अपठित बोध","व्याकरण","लेखन कौशल","पाठ्यपुस्तक के पाठ"],
+ "Social Science":["History","Geography","Civics / Political Science","Economics"],
+ Physics:["Units and Measurements","Motion and Forces","Work, Energy and Power","Electricity and Magnetism"],
+ Chemistry:["Matter and Its Structure","Atoms and Molecules","Chemical Reactions","Acids, Bases and Salts"],
+ Biology:["Cell: Structure and Function","Life Processes","Heredity and Evolution","Ecology and Environment"],
+ Accountancy:["Accounting: Basic Concepts","Theory Base of Accounting","Recording of Transactions","Bank Reconciliation Statement","Trial Balance","Depreciation, Provisions and Reserves","Bills of Exchange","Financial Statements","Rectification of Errors"],
+ "Business Studies":["Nature and Purpose of Business","Forms of Business Organisation","Public, Private and Global Enterprises","Business Services","Emerging Modes of Business"],
+ Economics:["Introduction to Economics","Consumer Behaviour","Demand and Supply","National Income","Money and Banking"],
+ History:["Early Societies and Civilisations","Empires and Kingdoms","Social and Cultural Change","Modern World History"],
+ Geography:["The Earth and Its Structure","Landforms","Climate","Resources and Development"],
+ "Political Science":["Constitution and Government","Rights and Duties","Democracy and Representation","Political Institutions"],
+ Sociology:["Society and Social Institutions","Culture and Socialisation","Social Change"]
+};
+const generalQuestions={
+ Mathematics:{
+  Easy:[{q:"What is 12 + 8?",o:["18","20","22","24"],a:1,e:"12 + 8 = 20."},{q:"Which operation reverses multiplication?",o:["Addition","Subtraction","Division","Counting"],a:2,e:"Division reverses multiplication."}],
+  Medium:[{q:"A notebook costs ₹15. What is the cost of 4 notebooks?",o:["₹45","₹50","₹60","₹75"],a:2,e:"15 × 4 = ₹60."}],
+  Hard:[{q:"A number is multiplied by 3 and then 5 is added to get 26. What is the number?",o:["5","6","7","8"],a:1,e:"3x + 5 = 26, so x = 7. The correct option should be 7.",fix:true}]
+ },
+ Science:{
+  Easy:[{q:"Which branch of science studies living organisms?",o:["Physics","Chemistry","Biology","Geology"],a:2,e:"Biology studies living organisms."},{q:"Which is commonly used by plants during photosynthesis?",o:["Carbon dioxide","Helium","Neon","Methane only"],a:0,e:"Plants use carbon dioxide and water, with light energy, during photosynthesis."}],
+  Medium:[{q:"Which instrument measures temperature?",o:["Barometer","Thermometer","Ammeter","Compass"],a:1,e:"A thermometer measures temperature."}],
+  Hard:[{q:"Which change is usually a chemical change?",o:["Ice melting","Paper being cut","Iron rusting","Water evaporating"],a:2,e:"Rusting forms new substances, so it is a chemical change."}]
+ },
+ English:{
+  Easy:[{q:"Which word is a noun in 'The boy runs'?",o:["The","Boy","Runs","Quickly"],a:1,e:"Boy names a person, so it is a noun."}],
+  Medium:[{q:"Choose the correct sentence.",o:["She go to school.","She goes to school.","She going school.","She gone to school every day."],a:1,e:"With 'she' in the simple present, the verb is 'goes'."}],
+  Hard:[{q:"In 'Although it rained, we played', what is 'Although it rained'?",o:["An independent clause","A dependent clause","A noun phrase","A preposition"],a:1,e:"It begins with a subordinating conjunction and cannot stand alone as the complete main statement."}]
+ },
+ Hindi:{
+  Easy:[{q:"'राम स्कूल जाता है' में व्यक्तिवाचक संज्ञा कौन-सी है?",o:["स्कूल","जाता","राम","है"],a:2,e:"'राम' किसी व्यक्ति का विशेष नाम है।"}],
+  Medium:[{q:"जो शब्द संज्ञा के स्थान पर आता है, उसे क्या कहते हैं?",o:["विशेषण","सर्वनाम","क्रिया","अव्यय"],a:1,e:"संज्ञा के स्थान पर प्रयुक्त शब्द सर्वनाम कहलाता है।"}],
+  Hard:[{q:"'सुंदर फूल खिला है' में 'सुंदर' क्या है?",o:["संज्ञा","सर्वनाम","विशेषण","क्रिया"],a:2,e:"'सुंदर' फूल की विशेषता बता रहा है, इसलिए विशेषण है।"}]
+ },
+ Accountancy:{
+  Easy:[{q:"Which statement shows assets and liabilities on a particular date?",o:["Cash book","Balance sheet","Journal","Sales book"],a:1,e:"A balance sheet reports assets, liabilities and equity at a specific date."}],
+  Medium:[{q:"Under the basic accounting equation, assets equal:",o:["Liabilities − Capital","Liabilities + Capital","Income − Expenses","Capital − Liabilities"],a:1,e:"The accounting equation is Assets = Liabilities + Capital."}],
+  Hard:[{q:"A business buys furniture for cash. Which is the best basic effect?",o:["Furniture increases; cash decreases","Furniture decreases; cash increases","Both assets increase","Both assets decrease"],a:0,e:"One asset (furniture) increases while another asset (cash) decreases."}]
+ },
+ Physics:{
+  Easy:[{q:"What is the SI unit of length?",o:["Kilogram","Second","Metre","Newton"],a:2,e:"The SI base unit of length is the metre."}],
+  Medium:[{q:"Speed is calculated as:",o:["Time ÷ distance","Distance ÷ time","Mass × acceleration","Force ÷ area"],a:1,e:"Average speed is distance travelled divided by elapsed time."}],
+  Hard:[{q:"A body travels 100 m in 20 s. Its average speed is:",o:["2 m/s","4 m/s","5 m/s","20 m/s"],a:2,e:"100 ÷ 20 = 5 m/s."}]
+ },
+ Chemistry:{
+  Easy:[{q:"What is the chemical formula of water?",o:["CO₂","H₂O","O₂","NaCl"],a:1,e:"A water molecule contains two hydrogen atoms and one oxygen atom."}],
+  Medium:[{q:"A solution with pH 3 is:",o:["Acidic","Neutral","Basic","Always pure water"],a:0,e:"At ordinary conditions, pH below 7 indicates an acidic solution."}],
+  Hard:[{q:"Which particle determines an element's atomic number?",o:["Neutron","Electron in every ion","Proton","Molecule"],a:2,e:"Atomic number equals the number of protons in the nucleus."}]
+ }
+};
+generalQuestions.Mathematics.Hard[0]={q:"A number is multiplied by 3 and then 5 is added to get 26. What is the number?",o:["5","7","8","9"],a:1,e:"Let the number be x: 3x + 5 = 26, so 3x = 21 and x = 7."};
+
+const state={classNo:6,subject:"",chapter:"",level:"Easy",questions:[],index:0,score:0,answered:false};
+const $=id=>document.getElementById(id);
+const views=["home","chaptersView","lessonView","quizView"];
+function show(id){views.forEach(v=>$(v).hidden=v!==id);window.scrollTo({top:0,behavior:"smooth"});}
+function getSubjects(){const c=+$("classSelect").value;const list=subjectsByClass[c];return Array.isArray(list)?list:list[$("stream").value]||list.Science;}
+function renderSubjects(){
+ state.classNo=+$("classSelect").value;
+ $("streamWrap").hidden=state.classNo<11;
+ const term=$("search").value.trim().toLowerCase();
+ const box=$("subjects");box.innerHTML="";
+ getSubjects().filter(s=>!term||s.toLowerCase().includes(term)).forEach(s=>{
+  const card=document.createElement("div");card.className="card";
+  const h=document.createElement("h3");h.textContent=(icons[s]||"📚")+" "+s;
+  const p=document.createElement("p");p.className="muted";p.textContent="Explore chapter list, lesson notes and quiz levels.";
+  const b=document.createElement("button");b.className="primary";b.textContent="Open subject";b.onclick=()=>openSubject(s);
+  card.append(h,p,b);box.append(card);
+ });
+ if(!box.children.length)box.innerHTML='<p class="muted">No subject matches your search. Try a different term.</p>';
+ renderLeaderboard();
+}
+function chapterList(subject){
+ // Use subject starter list; show class-specific naming while clearly marking syllabus verification status.
+ return starterChapters[subject]||["Chapter list to be added from the official syllabus"];
+}
+function openSubject(subject){
+ state.subject=subject;
+ $("chaptersTitle").textContent=`${subject} — Class ${state.classNo}`;
+ $("chaptersSubtitle").textContent=`${$("board").value} • ${state.classNo>=11?$("stream").value+" stream • ":""}Starter chapter list — verify against the current official syllabus.`;
+ const box=$("chapters");box.innerHTML="";
+ chapterList(subject).forEach((name,i)=>{
+  const b=document.createElement("button");b.className="chapter";b.textContent=`📘 Chapter ${i+1}: ${name}`;
+  b.onclick=()=>openLesson(name);box.append(b);
+ });
+ show("chaptersView");
+}
+function openLesson(chapter){
+ state.chapter=chapter;
+ $("lessonMeta").textContent=`${$("board").value} • Class ${state.classNo} • ${state.subject}`;
+ $("lessonTitle").textContent=chapter;
+ const body=$("lessonBody");body.innerHTML="";
+ const note=document.createElement("div");note.className="notice";
+ note.innerHTML="<b>Learning material status:</b> This prototype does not yet contain verified, full notes for every board-specific chapter. Use the quiz as a feature demo; add checked notes and chapter questions before publishing for students.";
+ body.append(note);
+ const list=document.createElement("ul");
+ ["Read the chapter from your prescribed textbook.","Write down key definitions, concepts and examples.","Try the quiz and review the explanation for every answer."].forEach(t=>{const li=document.createElement("li");li.textContent=t;list.append(li);});
+ body.append(list);
+ updateUnlockInfo();show("lessonView");
+}
+function quizFor(subject,level){
+ const found=generalQuestions[subject]&&generalQuestions[subject][level];
+ if(found&&found.length)return found;
+ // Safe general questions only when subject-specific question bank has not been added.
+ return [
+  {q:`Which is the best study habit for a chapter in ${subject}?`,o:["Memorise the title only","Read, practise and review mistakes","Skip examples","Avoid revision"],a:1,e:"Active practice and reviewing mistakes support learning."},
+  {q:"What should you do after getting a quiz answer wrong?",o:["Ignore it","Review the explanation and retry","Close the book forever","Change the subject"],a:1,e:"Reviewing the explanation helps you understand the concept."}
+ ];
+}
+function startQuiz(level){
+ const scores=loadScores();const key=unlockKey();
+ if(level==="Medium"&&!scores.unlocks?.[key]?.medium){alert("Score at least 60% on Easy to unlock Medium.");return;}
+ if(level==="Hard"&&!scores.unlocks?.[key]?.hard){alert("Score at least 60% on Medium to unlock Hard.");return;}
+ state.level=level;state.questions=quizFor(state.subject,level);state.index=0;state.score=0;state.answered=false;
+ $("quizTitle").textContent=level+" Quiz";$("quizMeta").textContent=`${state.subject} • Chapter ${state.chapter}`;
+ $("resultPanel").hidden=true;$("nextBtn").hidden=true;show("quizView");renderQuestion();
+}
+function renderQuestion(){
+ const q=state.questions[state.index];state.answered=false;
+ $("qCount").textContent=`${state.index+1}/${state.questions.length}`;$("liveScore").textContent=state.score;$("timerLabel").textContent=state.level;
+ $("questionText").textContent=q.q;$("feedback").textContent="";$("options").innerHTML="";$("nextBtn").hidden=true;
+ q.o.forEach((label,i)=>{const b=document.createElement("button");b.className="option";b.textContent=String.fromCharCode(65+i)+". "+label;b.onclick=()=>answer(i);$("options").append(b);});
+}
+function answer(i){
+ if(state.answered)return;state.answered=true;
+ const q=state.questions[state.index];const buttons=[...$("options").querySelectorAll("button")];
+ buttons.forEach((b,j)=>{b.disabled=true;if(j===q.a)b.classList.add("correct");if(j===i&&i!==q.a)b.classList.add("wrong");});
+ if(i===q.a)state.score++;
+ $("liveScore").textContent=state.score;
+ $("feedback").textContent=(i===q.a?"Correct! ":"Not quite. Correct answer: "+q.o[q.a]+". ")+q.e;
+ $("nextBtn").textContent=state.index===state.questions.length-1?"See results":"Next question →";$("nextBtn").hidden=false;
+}
+function finishQuiz(){
+ const total=state.questions.length;const percent=Math.round(state.score/total*100);const passed=percent>=60;
+ const scores=loadScores();const name=(prompt("Enter a display name for the local leaderboard (no private information):")||"Student").trim().slice(0,24)||"Student";
+ const record={name,board:$("board").value,classNo:state.classNo,subject:state.subject,chapter:state.chapter,level:state.level,score:state.score,total,percent,date:new Date().toLocaleDateString()};
+ scores.results.push(record);scores.results=scores.results.slice(-100);
+ scores.unlocks=scores.unlocks||{};const key=unlockKey();scores.unlocks[key]=scores.unlocks[key]||{};
+ if(passed&&state.level==="Easy")scores.unlocks[key].medium=true;
+ if(passed&&state.level==="Medium")scores.unlocks[key].hard=true;
+ localStorage.setItem("studyhubScoresV2",JSON.stringify(scores));
+ $("options").innerHTML="";$("questionText").textContent="Quiz completed!";
+ $("feedback").textContent=`You scored ${state.score}/${total} (${percent}%). `+(passed?"Level cleared!":"Keep practising — 60% is needed to unlock the next level.");
+ $("nextBtn").hidden=true;
+ $("resultPanel").hidden=false;$("resultPanel").innerHTML=`<div class="notice"><h3>Result summary</h3><p><b>Score:</b> ${state.score}/${total}</p><p><b>Percentage:</b> ${percent}%</p><p><b>Level:</b> ${state.level}</p><p>${passed?"🎉 Great work!":"Review the chapter and try again."}</p></div><button class="primary" id="retryBtn">Try this level again</button><button class="secondary" id="resultLessonBtn">Back to lesson</button>`;
+ $("retryBtn").onclick=()=>startQuiz(state.level);$("resultLessonBtn").onclick=()=>{show("lessonView");updateUnlockInfo();};renderLeaderboard();
+}
+function unlockKey(){return `${$("board").value}|${state.classNo}|${state.subject}|${state.chapter}`;}
+function updateUnlockInfo(){
+ const scores=loadScores();const u=scores.unlocks?.[unlockKey()]||{};
+ $("unlockInfo").textContent=`Level status: Easy is available. Medium: ${u.medium?"Unlocked":"Locked — clear Easy with 60%+"}. Hard: ${u.hard?"Unlocked":"Locked — clear Medium with 60%+"}.`;
+}
+function loadScores(){try{return JSON.parse(localStorage.getItem("studyhubScoresV2"))||{results:[],unlocks:{}}}catch{return {results:[],unlocks:{}}}}
+function renderLeaderboard(){
+ const data=loadScores().results||[];const box=$("leaderboard");
+ if(!data.length){box.innerHTML='<p class="muted">No scores yet. Complete a quiz to appear here.</p>';return;}
+ const bestByName={};
+ data.forEach(r=>{const k=r.name.toLowerCase();if(!bestByName[k]||r.percent>bestByName[k].percent)bestByName[k]=r;});
+ const sorted=Object.values(bestByName).sort((a,b)=>b.percent-a.percent||b.score-a.score).slice(0,10);
+ const table=document.createElement("table");table.innerHTML="<thead><tr><th>Rank</th><th>Student</th><th>Class / Subject</th><th>Best</th></tr></thead>";
+ const tbody=document.createElement("tbody");
+ sorted.forEach((r,i)=>{const tr=document.createElement("tr");[["#"+(i+1)], [r.name], [`${r.classNo} • ${r.subject}`], [`${r.percent}% (${r.score}/${r.total})`]].forEach(a=>{const td=document.createElement("td");td.textContent=a[0];tr.append(td)});tbody.append(tr);});
+ table.append(tbody);box.replaceChildren(table);
+}
+$("classSelect").addEventListener("change",renderSubjects);$("stream").addEventListener("change",renderSubjects);$("board").addEventListener("change",renderSubjects);$("search").addEventListener("input",()=>{if(!$("home").hidden)renderSubjects();});
+$("backHome").onclick=()=>show("home");$("backChapters").onclick=()=>show("chaptersView");$("quitQuiz").onclick=()=>{show("lessonView");updateUnlockInfo();};
+document.querySelectorAll("[data-level]").forEach(b=>b.addEventListener("click",()=>startQuiz(b.dataset.level)));
+$("nextBtn").onclick=()=>{if(state.index<state.questions.length-1){state.index++;renderQuestion();}else finishQuiz();};
+$("clearScores").onclick=()=>{if(confirm("Delete all StudyHub quiz scores and unlocks saved in this browser?")){localStorage.removeItem("studyhubScoresV2");renderLeaderboard();updateUnlockInfo();}};
+renderSubjects();
+</script>
+</body>
+</html>
